@@ -24,7 +24,7 @@ export default function Home() {
   const lastchar = isitrim.slice(0, -1)
   const operators = ['X', ':', '+', '-']
   const op= /[X:+\-⁰¹²³⁴⁵⁶⁷⁸⁹]/;
-  const p= /0\[⁰¹²³⁴⁵⁶⁷⁸⁹]/;
+  const p= /0[\⁰¹²³⁴⁵⁶⁷⁸⁹]/;
   const operatorpangkat = ['⁰', '¹', '²', '³', '⁴', '⁵', '⁶', '⁷', '⁸', '⁹',]
   const divRef = useRef<HTMLElement>(null)
 
@@ -41,6 +41,9 @@ export default function Home() {
   }
 
   const Result = () => {
+    if(valuearray.length == 1 && valuearray[0].includes('-') && !/[⁰¹²³⁴⁵⁶⁷⁸⁹]/.test(isi)){
+    }else{
+
     if (operators.includes(isi.slice(-1))) {
       if (op.test(lastchar)) {
         sethistory(prevhistory => [...prevhistory, lastchar])
@@ -48,12 +51,14 @@ export default function Home() {
     } else if (op.test(isi)) {
       sethistory(prevhistory => [...prevhistory, isi])
     }
+  }
 
     var newisi = ''
     valuearray.map((element) => {
+      console.log(p.test(element))
       if (element == '0' || p.test(element)) {
         newisi += ` ${element}`
-
+        
       } else {
         newisi += ` ${element.replace(/^0+/, '')}`
 
