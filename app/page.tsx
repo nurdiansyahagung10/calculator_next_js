@@ -1,113 +1,292 @@
+"use client"
+import Inputangkaawal from "@/components/inputangkaawal";
+import Listtombol from "@/components/listtombol";
+import { promises } from "dns";
 import Image from "next/image";
+import { useEffect, useRef, useState } from "react";
+import Sectionpangkat from "./sectionpangkat";
 
+var tombol = [
+  'C', 'b', 's', '/',
+  '7', '8', '9', '*',
+  '4', '5', '6', '-',
+  '3', '2', '1', '+',
+  '0', '.', '='
+]
 export default function Home() {
+  const [history, sethistory] = useState<string[]>([])
+  const [isi, setisi] = useState('')
+  const [pangkat, setpangkat] = useState('pangkat')
+  const [tema, settema] = useState('day')
+  const [value, setvalue] = useState('')
+  const isitrim = isi.trim()
+  const valuearray = value.split(' ')
+  const lastchar = isitrim.slice(0, -1)
+  const operators = ['X', ':', '+', '-']
+  const op= /[X:+\-⁰¹²³⁴⁵⁶⁷⁸⁹]/;
+  const p= /0\[⁰¹²³⁴⁵⁶⁷⁸⁹]/;
+  const operatorpangkat = ['⁰', '¹', '²', '³', '⁴', '⁵', '⁶', '⁷', '⁸', '⁹',]
+  const divRef = useRef<HTMLElement>(null)
+
+  useEffect(() => {
+    if (divRef.current) {
+      divRef.current.scrollTop = divRef.current.scrollHeight;
+    }
+  });
+
+  const Clearall = () => {
+    setisi('')
+    setvalue('')
+    sethistory(prevhistory => [])
+  }
+
+  const Result = () => {
+    if (operators.includes(isi.slice(-1))) {
+      if (op.test(lastchar)) {
+        sethistory(prevhistory => [...prevhistory, lastchar])
+      }
+    } else if (op.test(isi)) {
+      sethistory(prevhistory => [...prevhistory, isi])
+    }
+
+    var newisi = ''
+    valuearray.map((element) => {
+      if (element == '0' || p.test(element)) {
+        newisi += ` ${element}`
+
+      } else {
+        newisi += ` ${element.replace(/^0+/, '')}`
+
+      }
+    })
+
+    const optp = Sectionpangkat(newisi)
+
+    if (operators.includes(optp.trim().slice(-1))) {
+
+      setisi((eval(optp.trim().slice(0, -1).toString())).toString().replace(/\./g, ','))
+      setvalue(eval(optp.trim().slice(0, -1).toString()).toString())
+
+    } else {
+
+      setisi((eval(optp.toString())).toString().replace(/\./g, ','))
+      setvalue(eval(optp.toString()).toString())
+
+    }
+
+  }
+
+  const Handlerkoma = (valuebutton: string, isibutton: string) => {
+    if (isi.slice(-1) == '') {
+      setvalue(previsi => previsi + `0${valuebutton}`)
+      setisi(previsi => previsi + `0${isibutton}`)
+    }
+    else if (valuearray[valuearray.length - 1].includes('.')) {
+
+    }
+    else if (operators.includes(isi.slice(-1))) {
+      setisi(previsi => previsi + ` 0${isibutton}`)
+      setvalue(previsi => previsi + ` 0${valuebutton}`)
+    } else if (isi.slice(-1) == ',') {
+    } else {
+      setisi(previsi => previsi + isibutton)
+      setvalue(previsi => previsi + valuebutton)
+    }
+  }
+
+  const Setpangkat = () => {
+    if (pangkat == "pangkat") {
+      tombol = [
+        'C', 'b', 's', '/',
+        '⁷', '⁸', '⁹', '*',
+        '⁴', '⁵', '⁶', '-',
+        '³', '²', '¹', '+',
+        '⁰', '.', '='
+      ]
+      setpangkat('')
+
+    } else {
+      tombol = [
+        'C', 'b', 's', '/',
+        '7', '8', '9', '*',
+        '4', '5', '6', '-',
+        '3', '2', '1', '+',
+        '0', '.', '='
+      ]
+
+      setpangkat('pangkat')
+
+    }
+  }
+
+  const Handlerclickmain = (valuebutton:string, isibutton:string) => {
+    if (isi.slice(-1) == '') {
+      if (operators.includes(isibutton)) {
+        setisi(previsi => previsi + `0 ${isibutton}`)
+        setvalue(previsi => previsi + `0 ${valuebutton}`)
+      } else if (operatorpangkat.includes(isibutton)) {
+        setisi(previsi => previsi + `0${isibutton}`)
+        setvalue(previsi => previsi + `0${valuebutton}`)
+      } else {
+        setisi(previsi => previsi.trim() + isibutton)
+        setvalue(previsi => previsi.trim() + valuebutton)
+      }
+    }
+    else if (isi.slice(-1) == ' ') {
+      if (operators.includes(isitrim.slice(-1))) {
+        if (operators.includes(isibutton)) {
+          setisi(previsi => previsi.slice(0, -1) + isibutton)
+          setvalue(previsi => previsi.slice(0, -1) + valuebutton)
+        }
+        else if (operatorpangkat.includes(isibutton)) {
+          setisi(previsi => previsi.trim() + isibutton)
+          setvalue(previsi => previsi.trim() + valuebutton)
+        } else {
+          setisi(previsi => previsi.trim() + isibutton)
+          setvalue(previsi => previsi.trim() + valuebutton)
+        }
+      } else {
+        if (operators.includes(isibutton)) {
+          setisi(previsi => previsi + isibutton)
+          setvalue(previsi => previsi + valuebutton)
+        }
+        else if (operatorpangkat.includes(isibutton)) {
+          setisi(previsi => previsi.trim() + isibutton)
+          setvalue(previsi => previsi.trim() + valuebutton)
+        } else {
+          setisi(previsi => previsi.trim() + isibutton)
+          setvalue(previsi => previsi.trim() + valuebutton)
+        }
+
+      }
+    }
+    else if (operatorpangkat.includes(isi.slice(-1))) {
+      if (operators.includes(isibutton)) {
+        setisi(previsi => previsi + ` ${isibutton}`)
+        setvalue(previsi => previsi + ` ${valuebutton}`)
+      }
+      else if (operatorpangkat.includes(isibutton)) {
+        setisi(previsi => previsi + isibutton)
+        setvalue(previsi => previsi + valuebutton)
+      }
+      else {
+        setisi(previsi => previsi + ` X ${isibutton}`)
+        setvalue(previsi => previsi + ` * ${valuebutton}`)
+      }
+    }
+    else if (operators.includes(isi.slice(-1))) {
+      if (operators.includes(isibutton)) {
+        setisi(previsi => previsi.slice(0, -1) + isibutton)
+        setvalue(previsi => previsi.slice(0, -1) + valuebutton)
+      }
+      else if (operatorpangkat.includes(isibutton)) {
+        setisi(previsi => previsi + ` 0${isibutton}`)
+        setvalue(previsi => previsi + ` 0${valuebutton}`)
+      } else {
+        setisi(previsi => previsi + ` ${isibutton}`)
+        setvalue(previsi => previsi + ` ${valuebutton}`)
+      }
+    } else if (isi.slice(-1) == ',') {
+      if (operatorpangkat.includes(isibutton)) {
+        setisi(previsi => previsi + `0 ${isibutton}`)
+        setvalue(previsi => previsi + `0 ${valuebutton}`)
+      }
+      else if (operatorpangkat.includes(isibutton)) {
+        setisi(previsi => previsi.slice(0, -1) + `${isibutton}`)
+        setvalue(previsi => previsi.slice(0, -1) + `${valuebutton}`)
+      } else {
+        setisi(previsi => previsi + isibutton)
+        setvalue(previsi => previsi + valuebutton)
+      }
+    } else {
+      if (operators.includes(isibutton)) {
+        setisi(previsi => previsi + ` ${isibutton}`)
+        setvalue(previsi => previsi + ` ${valuebutton}`)
+      } else {
+        setisi(previsi => (previsi + isibutton).trim())
+        setvalue(previsi => (previsi + valuebutton).trim())
+      }
+    }
+
+  }
+
+  const Backspace = () => {
+    setisi(previsi => previsi.slice(0, -1))
+    setvalue(previsi => previsi.slice(0, -1))
+  }
+
+  const getvaluebutton = (e: any) => {
+    const isibutton = e.currentTarget.textContent.trim()
+    const valuebutton = e.currentTarget.value.trim()
+
+    switch (valuebutton) {
+      case 'C':
+        Clearall()
+        break
+      case '=':
+        Result()
+        break
+      case 's':
+        Setpangkat()
+        break
+      case 'b':
+        Backspace()
+        break
+      case ',':
+        Handlerkoma(valuebutton, isibutton)
+        break
+      default:
+        Handlerclickmain(valuebutton, isibutton)
+        break
+    }
+  }
+
+
+  const switchtheme = () => {
+    settema((prevTheme) => (prevTheme === "night" ? "day" : "night"));
+  }
+
+
+
   return (
-    <main className="flex min-h-screen flex-col items-center justify-between p-24">
-      <div className="z-10 w-full max-w-5xl items-center justify-between font-mono text-sm lg:flex">
-        <p className="fixed left-0 top-0 flex w-full justify-center border-b border-gray-300 bg-gradient-to-b from-zinc-200 pb-6 pt-8 backdrop-blur-2xl dark:border-neutral-800 dark:bg-zinc-800/30 dark:from-inherit lg:static lg:w-auto  lg:rounded-xl lg:border lg:bg-gray-200 lg:p-4 lg:dark:bg-zinc-800/30">
-          Get started by editing&nbsp;
-          <code className="font-mono font-bold">app/page.tsx</code>
-        </p>
-        <div className="fixed bottom-0 left-0 flex h-48 w-full items-end justify-center bg-gradient-to-t from-white via-white dark:from-black dark:via-black lg:static lg:size-auto lg:bg-none">
-          <a
-            className="pointer-events-none flex place-items-center gap-2 p-8 lg:pointer-events-auto lg:p-0"
-            href="https://vercel.com?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            By{" "}
-            <Image
-              src="/vercel.svg"
-              alt="Vercel Logo"
-              className="dark:invert"
-              width={100}
-              height={24}
-              priority
-            />
-          </a>
+    <main className={`container p-3 mx-auto overflow-hidden flex relative justify-between flex-col ${tema == 'day' ? "bg-gradient-to-br from-white to-slate-200" : ""}${tema == 'night' ? "bg-gradient-to-br from-slate-800 to-slate-950" : ""}`} style={{ height: '100vh' }}>
+      <section className=" absolute mt-3 h-0 top-0 grid grid-cols-4 w-full gap-3">
+        <button onClick={switchtheme} className={`py-4 rounded-t-3xl rounded-e-3xl text-xl border-2  border-none ${tema == 'day' ? " bg-slate-300 text-slate-600" : ""}${tema == 'night' ? "bg-slate-700 text-white" : ""}`} type='button' >{tema == "night" ? <i className="fa-solid fa-sun"></i> : ''}{tema == "day" ? <i className="fa-solid fa-moon"></i> : ''}</button>
+      </section>
+      <section ref={divRef} className="overflow-y-scroll h-full">
+        <div className="justify-end text-end flex-col flex">
+          {history.map((params: string, index: number) => {
+            return (
+              <span className={`text-lg whitespace-nowrap w-full ${tema == 'day' ? " text-slate-400" : ""}${tema == 'night' ? "text-slate-300" : ""}`} key={index}>{params}</span>
+            )
+          })}
         </div>
-      </div>
+      </section>
+      <section className="pb-4 flex ">
+        <Inputangkaawal params={isi} tema={tema} />
+      </section>
+      <section className="grid grid-cols-4 gap-3 ">
 
-      <div className="relative z-[-1] flex place-items-center before:absolute before:h-[300px] before:w-full before:-translate-x-1/2 before:rounded-full before:bg-gradient-radial before:from-white before:to-transparent before:blur-2xl before:content-[''] after:absolute after:-z-20 after:h-[180px] after:w-full after:translate-x-1/3 after:bg-gradient-conic after:from-sky-200 after:via-blue-200 after:blur-2xl after:content-[''] before:dark:bg-gradient-to-br before:dark:from-transparent before:dark:to-blue-700 before:dark:opacity-10 after:dark:from-sky-900 after:dark:via-[#0141ff] after:dark:opacity-40 sm:before:w-[480px] sm:after:w-[240px] before:lg:h-[360px]">
-        <Image
-          className="relative dark:drop-shadow-[0_0_0.3rem_#ffffff70] dark:invert"
-          src="/next.svg"
-          alt="Next.js Logo"
-          width={180}
-          height={37}
-          priority
-        />
-      </div>
+        {tombol.map((btn: string, index: number) => {
+          var customclass = ''
+          if (index == 16) {
+            customclass = 'col-span-2'
+          }
 
-      <div className="mb-32 grid text-center lg:mb-0 lg:w-full lg:max-w-5xl lg:grid-cols-4 lg:text-left">
-        <a
-          href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className="mb-3 text-2xl font-semibold">
-            Docs{" "}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className="m-0 max-w-[30ch] text-sm opacity-50">
-            Find in-depth information about Next.js features and API.
-          </p>
-        </a>
+          if (index >= 0 && index <= 2) {
+            customclass += ` ${tema == 'day' ? "from-slate-400 to-slate-300 border-slate-400 text-slate-600" : ""}${tema == 'night' ? "from-slate-700 text-white to-slate-500 border-slate-500" : ""}`
+          } else if (index == 3 || index == 7 || index == 11 || index == 15 || index == 18) {
+            customclass += " from-orange-700 to-orange-500 border-orange-500 text-white"
+          } else {
+            customclass += `  ${tema == 'day' ? "from-slate-300 to-white border-slate-300 text-slate-600" : ""}${tema == 'night' ? "from-gray-800 to-gray-600 border-gray-600 text-white" : ""}`
 
-        <a
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className="mb-3 text-2xl font-semibold">
-            Learn{" "}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className="m-0 max-w-[30ch] text-sm opacity-50">
-            Learn about Next.js in an interactive course with&nbsp;quizzes!
-          </p>
-        </a>
+          }
+          return (
+            <Listtombol key={index} params={btn} customclass={customclass} handleclick={getvaluebutton} />
 
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className="mb-3 text-2xl font-semibold">
-            Templates{" "}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className="m-0 max-w-[30ch] text-sm opacity-50">
-            Explore starter templates for Next.js.
-          </p>
-        </a>
-
-        <a
-          href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className="mb-3 text-2xl font-semibold">
-            Deploy{" "}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className="m-0 max-w-[30ch] text-balance text-sm opacity-50">
-            Instantly deploy your Next.js site to a shareable URL with Vercel.
-          </p>
-        </a>
-      </div>
+          )
+        })}
+      </section>
     </main>
   );
 }
