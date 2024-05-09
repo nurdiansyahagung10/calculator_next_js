@@ -251,7 +251,7 @@ export default function Home() {
   return (
     <main className={`container p-3 mx-auto overflow-hidden flex relative justify-between flex-col ${tema == 'day' ? "bg-gradient-to-br from-white to-slate-200" : ""}${tema == 'night' ? "bg-gradient-to-br from-slate-800 to-slate-950" : ""}`} style={{ height: '100vh' }}>
       <section className=" absolute mt-3 h-0 top-0 grid grid-cols-4 w-full gap-3">
-        <button onClick={switchtheme} className={`py-4 rounded-t-3xl rounded-e-3xl text-xl border-2  border-none ${tema == 'day' ? " bg-slate-300 text-slate-600" : ""}${tema == 'night' ? "bg-slate-700 text-white" : ""}`} type='button' >{tema == "night" ? <i className="fa-solid fa-sun"></i> : ''}{tema == "day" ? <i className="fa-solid fa-moon"></i> : ''}</button>
+        <button onClick={switchtheme} className={`py-4 cursor-pointer rounded-t-3xl rounded-e-3xl text-xl border-2  border-none ${tema == 'day' ? " bg-slate-300 text-slate-600" : ""}${tema == 'night' ? "bg-slate-700 text-white" : ""}`} type='button' >{tema == "night" ? <i className="fa-solid fa-sun"></i> : ''}{tema == "day" ? <i className="fa-solid fa-moon"></i> : ''}</button>
       </section>
       <section ref={divRef} className="overflow-y-scroll h-full">
         <div className="justify-end text-end flex-col flex">

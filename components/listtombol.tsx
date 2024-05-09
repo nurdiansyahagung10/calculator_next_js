@@ -27,7 +27,7 @@ const Listtombol = ({ params,  handleclick, customclass }: Props) => {
 
   
   return (
-    <button value={params} className={' py-5 rounded-3xl bg-gradient-to-br text-xl  border-2 ' + customclass} onClick={handleclick} type='button' > <Data params={params} /> </button>
+    <button value={params} className={' py-5 rounded-3xl cursor-pointer bg-gradient-to-br text-xl  border-2 ' + customclass} onClick={handleclick} type='button' > <Data params={params} /> </button>
   )
 }
 export default Listtombol
